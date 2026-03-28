@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computational Chemistry Mastery Pathway</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #e5e5e5;
+        }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .gradient-text {
+            background: linear-gradient(135deg, #00f5ff 0%, #b026ff 50%, #ff006e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .skill-node {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .skill-node:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(0, 245, 255, 0.3);
+            border-color: rgba(0, 245, 255, 0.5);
+        }
+        .skill-node.active {
+            background: rgba(0, 245, 255, 0.1);
+            border-color: #00f5ff;
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.2);
+        }
+        .progress-bar {
+            background: linear-gradient(90deg, #00f5ff 0%, #b026ff 100%);
+            height: 4px;
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+        .resource-card {
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        .resource-card:hover {
+            border-left-color: #00f5ff;
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(5px);
+        }
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .difficulty-badge {
+            font-size: 0.65rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .diff-beginner { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); }
+        .diff-intermediate { background: rgba(234, 179, 8, 0.2); color: #facc15; border: 1px solid rgba(234, 179, 8, 0.3); }
+        .diff-advanced { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+        
+        .code-block {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .code-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #00f5ff, #b026ff);
+        }
+        .checklist-item {
+            transition: all 0.2s;
+        }
+        .checklist-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+        .checklist-item.checked {
+            opacity: 0.5;
+        }
+        .checklist-item.checked .check-circle {
+            background: #00f5ff;
+            border-color: #00f5ff;
+        }
+        .molecule-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            z-index: -1;
+        }
+    </style>
+</head>
+<body class="min-h-screen overflow-x-hidden">
+
+    <div class="molecule-bg"></div>
+
+    <!-- Header -->
+    <header class="relative z-10 border-b border-white/10 bg-black/50 backdrop-blur-md sticky top-0">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl">⚛</div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">CompChem<span class="gradient-text">Pathway</span></h1>
+                    <p class="text-xs text-gray-500 mono">v2.0 // ACCELERATED LEARNING</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4 text-sm">
+                <div class="hidden md:flex items-center space-x-2 text-gray-400">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <span class="mono">LIVE RESOURCES</span>
+                </div>
+                <button onclick="resetProgress()" class="px-4 py-2 rounded-lg glass-panel hover:bg-white/5 text-xs font-medium transition-colors">
+                    Reset Progress
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative z-10 container mx-auto px-6 py-12">
+        <div class="max-w-4xl mx-auto text-center mb-12">
+            <h2 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                Master <span class="gradient-text">Computational Chemistry</span><br>
+                <span class="text-2xl md:text-3xl font-light text-gray-400">Structured for Rapid Skill Acquisition</span>
+            </h2>
+            <p class="text-lg text-gray-400 mb-8 max-w-2xl mx-auto">
+                A curated roadmap from quantum mechanics fundamentals to research-grade molecular simulations. 
+                Prioritized by impact, sequenced for retention.
+            </p>
+            
+            <!-- Progress Overview -->
+            <div class="glass-panel rounded-2xl p-6 max-w-2xl mx-auto">
+                <div class="flex justify-between text-sm mb-2">
+                    <span class="text-gray-400">Overall Completion</span>
+                    <span class="mono text-cyan-400" id="total-progress">0%</span>
+                </div>
+                <div class="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+                    <div class="progress-bar w-0" id="main-progress-bar"></div>
+                </div>
+                <div class="flex justify-between mt-4 text-xs text-gray-500 mono">
+                    <span>Foundation</span>
+                    <span>Methods</span>
+                    <span>Software</span>
+                    <span>Research</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Learning Tracks -->
+        <div class="grid md:grid-cols-4 gap-4 mb-12">
+            <button onclick="switchTab('foundation')" id="tab-btn-foundation" class="skill-node glass-panel rounded-xl p-6 text-left border border-white/10 active">
+                <div class="text-2xl mb-2">📐</div>
+                <h3 class="font-bold text-lg mb-1">Foundation</h3>
+                <p class="text-sm text-gray-400">Math & Physics Prerequisites</p>
+                <div class="mt-3 text-xs mono text-cyan-400">Weeks 1-4</div>
+            </button>
+            
+            <button onclick="switchTab('theory')" id="tab-btn-theory" class="skill-node glass-panel rounded-xl p-6 text-left border border-white/10">
+                <div class="text-2xl mb-2">⚡</div>
+                <h3 class="font-bold text-lg mb-1">Theory</h3>
+                <p class="text-sm text-gray-400">QM, DFT & Statistical Mech</p>
+                <div class="mt-3 text-xs mono text-purple-400">Weeks 5-10</div>
+            </button>
+            
+            <button onclick="switchTab('software')" id="tab-btn-software" class="skill-node glass-panel rounded-xl p-6 text-left border border-white/10">
+                <div class="text-2xl mb-2">💻</div>
+                <h3 class="font-bold text-lg mb-1">Software</h3>
+                <p class="text-sm text-gray-400">ORCA, Python & Automation</p>
+                <div class="mt-3 text-xs mono text-pink-400">Weeks 11-16</div>
+            </button>
+            
+            <button onclick="switchTab('specialization')" id="tab-btn-specialization" class="skill-node glass-panel rounded-xl p-6 text-left border border-white/10">
+                <div class="text-2xl mb-2">🎯</div>
+                <h3 class="font-bold text-lg mb-1">Specialize</h3>
+                <p class="text-sm text-gray-400">Applications & Research</p>
+                <div class="mt-3 text-xs mono text-orange-400">Weeks 17+</div>
+            </button>
+        </div>
+
+        <!-- Content Area -->
+        <div class="glass-panel rounded-2xl border border-white/10 min-h-[600px] relative overflow-hidden">
+            
+            <!-- FOUNDATION TAB -->
+            <div id="tab-foundation" class="tab-content active p-8">
+                <div class="flex justify-between items-start mb-8">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-2">Mathematical & Physical Foundations</h3>
+                        <p class="text-gray-400">Essential prerequisites before touching molecular modeling software</p>
+                    </div>
+                    <span class="difficulty-badge diff-beginner">Beginner</span>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Core Math -->
+                    <div class="space-y-4">
+                        <h4 class="font-semibold text-cyan-400 flex items-center">
+                            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 mr-2"></span>
+                            Linear Algebra & Calculus
+                        </h4>
+                        
+                        <div class="space-y-3">
+                            <div class="resource-card p-4 rounded-lg glass-panel cursor-pointer" onclick="toggleCheck(this)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center mb-1">
+                                            <span class="check-circle w-5 h-5 rounded-full border border-gray-500 mr-3 flex items-center justify-center text-xs transition-all"></span>
+                                            <h5 class="font-medium">3Blue1Brown: Essence of Linear Algebra</h5>
+                                        </div>
+                                        <p class="text-sm text-gray-400 ml-8">Visual intuition for vectors, matrices, eigenvalues. Critical for understanding MO theory.</p>
+                                        <div class="ml-8 mt-2 flex items-center space-x-2 text-xs">
+                                            <span class="text-cyan-400">YouTube</span>
+                                            <span class="text-gray-600">•</span>
+                                            <span class="text-gray-500">~3 hours</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="resource-card p-4 rounded-lg glass-panel cursor-pointer" onclick="toggleCheck(this)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center mb-1">
+                                            <span class="check-circle w-5 h-5 rounded-full border border-gray-500 mr-3 flex items-center justify-center text-xs transition-all"></span>
+                                            <h5 class="font-medium">Khan Academy: Multivariable Calculus</h5>
+                                        </div>
+                                        <p class="text-sm text-gray-400 ml-8">Partial derivatives, multiple integrals, gradient operators. Essential for DFT functionals.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="resource-card p-4 rounded-lg glass-panel cursor-pointer" onclick="toggleCheck(this)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center mb-1">
+                                            <span class="check-circle w-5 h-5 rounded-full border border-gray-500 mr-3 flex items-center justify-center text-xs transition-all"></span>
+                                            <h5 class="font-medium">Differential Equations (Basics)</h5>
+                                        </div>
+                                        <p class="text-sm text-gray-400 ml-8">Schrödinger equation is a PDE. Understand separation of variables.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 p-4 rounded-lg bg-cyan-500/10 border border-cyan-500/20">
+                            <h5 class="text-sm font-semibold text-cyan-300 mb-2">⚡ Quick Check</h5>
+                            <p class="text-xs text-gray-300">Can you explain what eigenvalues represent in the context of molecular orbitals? If not, revisit 3Blue1Brown before proceeding.</p>
+                        </div>
+                    </div>
+
+                    <!-- Physics Basics -->
+                    <div class="space-y-4">
+                        <h4 class="font-semibold text-purple-400 flex items-center">
+                            <span class="w-1.5 h-1.5 rounded-full bg-purple-400 mr-2"></span>
+                            Quantum Mechanics Basics
+                        </h4>
+
+                        <div class="space-y-3">
+                            <div class="resource-card p-4 rounded-lg glass-panel cursor-pointer" onclick="toggleCheck(this)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center mb-1">
+                                            <span class="check-circle w-5 h-5 rounded-full border border-gray-500 mr-3 flex items-center justify-center text-xs transition-all"></span>
+                                            <h5 class="font-medium">Introduction to Quantum Mechanics (Griffiths) - Ch 1-3</h5>
+                                        </div>
+                                        <p class="text-sm text-gray-400 ml-8">The standard undergraduate text. Focus on wavefunctions, operators, and the harmonic oscillator.</p>
+                                        <div class="ml-8 mt-2 text-xs text-purple-400">Textbook • Essential</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="resource-card p-4 rounded-lg glass-panel cursor-pointer" onclick="toggleCheck(this)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center mb-1">
+                                            <span class="check-circle w-5 h-5 rounded-full border border-gray-500 mr-3 flex items-center justify-center text-xs transition-all"></span>
+                                            <h5 class="font-medium">MIT 5.61: Physical Chemistry (YouTube)</h5>
+                                        </div>
+                                        <p class="text-sm text-gray-400 ml-8">Professor Mircea Dincă's lectures on quantum chemistry fundamentals.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="resource-card p-4 rounded-lg glass-panel cursor-pointer" onclick="toggleCheck(this)">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex-1">
+                                        <div class="flex items-center mb-1">
+                                            <span class="check-circle w-5 h-5 rounded-full border border-gray-500 mr-3 flex items-center justify-center text-xs transition-all"></span>
+                                            <h5 class="font-medium">PhET Simulations: Quantum Bound States</h5>
+                                        </div>
+                                        <p class="text-sm text-gray-400 ml-8">Interactive visualizations of potential wells and wavefunctions.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="code-block p-4 mt-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs mono text-gray-500">CONCEPT CHECK</span>
+                                <span class="text-xs text-gray-600">Python</span>
+                            </div>
+                            <pre class="text-sm mono text-gray-300 overflow-x-auto"># Can you write a function to normalize a wavefunction?
+import numpy as np
+
+def normalize_psi(x, psi):
+    """Normalize wavefunction psi over domain x"""
+    integral = np.trapz(np.abs(psi)**2, x)
+    return psi / np.sqrt(integral)</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- THEORY TAB -->
+            <div id="tab-theory" class="tab-content p-8">
+                <div class="flex justify-between items-start mb-8">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-2">Computational Chemistry Theory</h3>
+                        <p class="text-gray-400">From Hartree-Fock to Density Functional Theory and beyond</p>
+                    </div>
+                    <span class="difficulty-badge diff-intermediate">Intermediate</span>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Essential Textbooks -->
+                    <div class="glass-panel rounded-xl p-6 border border-white/5">
+                        <h4 class="font-semibold text-purple-400 mb-4">Core Textbooks (In Order)</h4>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="resource-card p-4 rounded-lg cursor-pointer" onclick="toggleCheck(this)">
+                                <div class="check-circle w-5 h-5 rounded-full border border-gray-500 mb-3 flex items-center justify-center text-xs"></div>
+                                <h5 class="font-bold text-sm mb-1">Molecular Quantum Mechanics</h5>
+                                <p class="text-xs text-gray-400 mb-2">Atkins & Friedman</p>
+                                <p class="text-xs text-gray-500">Start here. Gentle intro to molecular QM without heavy computation.</p>
+                            </div>
+                            
+                            <div class="resource-card p-4 rounded-lg cursor-pointer" onclick="toggleCheck(this)">
+                                <div class="check-circle w-5 h-5 rounded-full border border-gray-500 mb-3 flex items-center justify-center text-xs"></div>
+                                <h5 class="font-bold text-sm mb-1">Essentials of Computational Chemistry</h5>
+                                <p class="text-xs text-gray-400 mb-2">Christopher J. Cramer [^6^]</p>
+                                <p class="text-xs text-gray-500">The gold standard. Covers HF, DFT, semi-empirical, and force fields.</p>
+                            </div>
+                            
+                            <div class="resource-card p-4 rounded-lg cursor-pointer" onclick="toggleCheck(this)">
+                                <div class="check-circle w-5 h-5 rounded-full border border-gray-500 mb-3 flex items-center justify-center text-xs"></div>
+                                <h5 class="font-bold text-sm mb-1">Introduction to Computational Chemistry</h5>
+                                <p class="text-xs text-gray-400 mb-2">Frank Jensen [^17^]</p>
+                                <p class="text-xs text-gray-500">Mathematically rigorous. Best for understanding basis sets and geometry optimization.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Method Hierarchy -->
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <h4 class="font-semibold text-pink-400">Electronic Structure Methods</h4>
+                            
+                            <div class="space-y-3">
+                                <div class="flex items-center p-3 rounded-lg glass-panel border-l-2 border-pink-500">
+                                    <div class="flex-1">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <span class="font-medium text-sm">Hartree-Fock (HF)</span>
+                                            <span class="text-xs text-gray-500">Week 5</span>
+                                        </div>
+                                        <p class="text-xs text-gray-400">Mean-field approximation. Understand SCF cycles and Roothaan equations.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center p-3 rounded-lg glass-panel border-l-2 border-purple-500">
+                                    <div class="flex-1">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <span class="font-medium text-sm">Post-HF Methods</span>
+                                            <span class="text-xs text-gray-500">Week 7</span>
+                                        </div>
+                                        <p class="text-xs text-gray-400">MP2, CCSD(T), CI. Electron correlation and configuration interaction.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center p-3 rounded-lg glass-panel border-l-2 border-cyan-500">
+                                    <div class="flex-1">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <span class="font-medium text-sm">Density Functional Theory</span>
+                                            <span class="text-xs text-gray-500">Week 9</span>
+                                        </div>
+                                        <p class="text-xs text-gray-400">Hohenberg-Kohn theorems, Kohn-Sham orbitals, exchange-correlation functionals.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <h4 class="font-semibold text-orange-400">Simulation Methods</h4>
+                            
+                            <div class="space-y-3">
+                                <div class="resource-card p-4 rounded-lg cursor-pointer" onclick="toggleCheck(this)">
+                                    <div class="check-circle w-5 h-5 rounded-full border border-gray-500 mr-3 flex items-center justify-center text-xs float-left mt-0.5"></div>
+                                    <div class="ml-8">
+                                        <h5 class="font-medium text-sm">Molecular Dynamics (MD)</h5>
+                                        <p class="text-xs text-gray-400">Newton's equations, force fields (AMBER, CHARMM), integration algorithms.</p>
+                                    </div>
+                                </div>
+
+                                <div class="resource-card p-4 rounded-lg cursor-pointer" onclick="toggleCheck(this)">
+                                    <div class="check-circle w-5 h-5 rounded-full border border-gray-500 mr-3 flex items-center justify-center text-xs float-left mt-0.5"></div>
+                                    <div class="ml-8">
+                                        <h5 class="font-medium text-sm">Monte Carlo Methods</h5>
+                                        <p class="text-xs text-gray-400">Statistical sampling, Metropolis algorithm, phase space exploration.</p>
+                                    </div>
+                                </div>
+
+                                <div class="resource-card p-4 rounded-lg cursor-pointer" onclick="toggleCheck(this)">
+                                    <div class="check-circle w-5 h-5 rounded-full border border-gray-500 mr-3 flex items-center justify-center text-xs float-left mt-0.5"></div>
+                                    <div class="ml-8">
+                                        <h5 class="font-medium text-sm">Statistical Mechanics</h5>
+                                        <p class="text-xs text-gray-400">Ensembles, partition functions, free energy calculations. <span class="text-orange-400">Tuckerman's text recommended [^2^]</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                        <h5 class="text-sm font-semibold text-purple-300 mb-2">🎯 Focus Area: DFT</h5>
+                        <p class="text-xs text-gray-300 mb-2">90% of modern computational chemistry uses DFT. Master these concepts:</p>
+                        <ul class="text-xs text-gray-400 space-y-1 ml-4 list-disc">
+                            <li>B3LYP is outdated for transition metals; use range-separated hybrids</li>
+                            <li>Dispersion corrections (D3, D4) are essential for non-covalent interactions</li>
+                            <li>Basis set convergence: triple-zeta minimum for publication-quality results</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOFTWARE TAB -->
+            <div id="tab-software" class="tab-content p-8">
+                <div class="flex justify-between items-start mb-8">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-2">Software & Programming</h3>
+                        <p class="text-gray-400">ORCA, Python automation, and high-performance computing workflows</p>
+                    </div>
+                    <span class="difficulty-badge diff-intermediate">Intermediate</span>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <div class="glass-panel rounded-xl p-5 border border-cyan-500/30 bg-cyan-500/5">
+                        <h4 class="font-bold text-cyan-400 mb-3 flex items-center">
+                            <span class="text-xl mr-2">⚡</span> ORCA
+                        </h4>
+                        <p class="text-sm text-gray-400 mb-3">Free for academic use. Best balance of speed and accuracy for quantum chemistry.</p>
+                        <ul class="text-xs space-y-2 text-gray-300">
+                            <li class="flex items-center"><span class="w-1 h-1 bg-cyan-400 rounded-full mr-2"></span>Input file syntax</li>
+                            <li class="flex items-center"><span class="w-1 h-1 bg-cyan-400 rounded-full mr-2"></span>Geometry optimization</li>
+                            <li class="flex items-center"><span class="w-1 h-1 bg-cyan-400 rounded-full mr-2"></span>Frequency calculations</li>
+                            <li class="flex items-center"><span class="w-1 h-1 bg-cyan-400 rounded-full mr-2"></span>Transition states</li>
+                        </ul>
+                        <div class="mt-4 pt-3 border-t border-white/10">
+                            <a href="https://orca-manual.mpi-muelheim.mpg.de/" target="_blank" class="text-xs text-cyan-400 hover:underline">Official Manual →</a>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-xl p-5 border border-purple-500/30 bg-purple-500/5">
+                        <h4 class="font-bold text-purple-400 mb-3 flex items-center">
+                            <span class="text-xl mr-2">🐍</span> Python Stack
+                        </h4>
+                        <p class="text-sm text-gray-400 mb-3">Essential for automation, analysis, and visualization of chemical data.</p>
+                        <ul class="text-xs space-y-2 text-gray-300">
+                            <li class="flex items-center"><span class="w-1 h-1 bg-purple-400 rounded-full mr-2"></span>cclib (parsing output)</li>
+                            <li class="flex items-center"><span class="w-1 h-1 bg-purple-400 rounded-full mr-2"></span>ASE (Atomic Simulation)</li>
+                            <li class="flex items-center"><span class="w-1 h-1 bg-purple-400 rounded-full mr-2"></span>RDKit (cheminformatics)</li>
+                            <li class="flex items-center"><span class="w-1 h-1 bg-purple-400 rounded-full mr-2"></span>PySCF (quantum chemistry)</li>
+                        </ul>
+                        <div class="mt-4 pt-3 border-t border-white/10">
+                            <span class="text-xs text-purple-400">autodE recommended for beginners [^14^]</span>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-xl p-5 border border-pink-500/30 bg-pink-500/5">
+                        <h4 class="font-bold text-pink-400 mb-3 flex items-center">
+                            <span class="text-xl mr-2">🖥️</span> Visualization
+                        </h4>
+                        <p class="text-sm text-gray-400 mb-3">Molecular structures, orbitals, and spectra analysis.</p>
+                        <ul class="text-xs space-y-2 text-gray-300">
+                            <li class="flex items-center"><span class="w-1 h-1 bg-pink-400 rounded-full mr-2"></span>Avogadro (building structures)</li>
+                            <li class="flex items-center"><span class="w-1 h-1 bg-pink-400 rounded-full mr-2"></span>VMD (MD trajectories)</li>
+                            <li class="flex items-center"><span class="w-1 h-1 bg-pink-400 rounded-full mr-2"></span>Multiwfn (wavefunction analysis)</li>
+                            <li class="flex items-center"><span class="w-1 h-1 bg-pink-400 rounded-full mr-2"></span>ChimeraX (publication images)</li>
+                        </ul>
+                        <div class="mt-4 pt-3 border-t border-white/10">
+                            <span class="text-xs text-pink-400">Free alternatives to GaussView</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Python for CompChem -->
+                <div class="glass-panel rounded-xl p-6 border border-white/5 mb-6">
+                    <h4 class="font-semibold text-cyan-400 mb-4">Python Automation Template</h4>
+                    <div class="code-block p-4">
+                        <pre class="text-sm mono text-gray-300 overflow-x-auto"># Standard workflow for ORCA automation
+import os
+import subprocess
+import cclib
+
+# 1. Generate input files programmatically
+def write_orca_input(molecule_name, coords, method="B3LYP", basis="def2-SVP"):
+    inp = f"""! {method} {basis} Opt Freq
+%pal nprocs 8 end
+%maxcore 4000
+* xyz 0 1
+{coords}
+*"""
+    with open(f"{molecule_name}.inp", "w") as f:
+        f.write(inp)
+
+# 2. Run calculation
+subprocess.run(["orca", "molecule.inp"], capture_output=True)
+
+# 3. Parse results with cclib
+data = cclib.io.ccread("molecule.out")
+print(f"Energy: {data.scfenergies[-1]} eV")
+print(f"Dipole moment: {data.moments[1]}")</pre>
+                    </div>
+                    <div class="mt-4 grid md:grid-cols-2 gap-4 text-sm">
+                        <div class="resource-card p-3 rounded cursor-pointer" onclick="toggleCheck(this)">
+                            <div class="check-circle w-4 h-4 rounded-full border border-gray-500 mr-2 inline-flex items-center justify-center text-xs"></div>
+                            <span class="text-gray-300">Set up ORCA on your machine (Windows/Linux)</span>
+                        </div>
+                        <div class="resource-card p-3 rounded cursor-pointer" onclick="toggleCheck(this)">
+                            <div class="check-circle w-4 h-4 rounded-full border border-gray-500 mr-2 inline-flex items-center justify-center text-xs"></div>
+                            <span class="text-gray-300">Write a script to batch-process geometry optimizations</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GitHub Resources -->
+                <div class="glass-panel rounded-xl p-6 border border-white/5">
+                    <h4 class="font-semibold text-green-400 mb-4">Essential GitHub Repositories</h4>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <a href="https://github.com/topics/orca-quantum-chemistry" target="_blank" class="resource-card p-4 rounded-lg block hover:no-underline">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-medium text-sm text-gray-200">ORCA Python Tools</span>
+                                <span class="text-xs mono text-gray-500">48 repos</span>
+                            </div>
+                            <p class="text-xs text-gray-400">Automation scripts for extracting energies, plotting spectra, and managing workflows [^11^]</p>
+                        </a>
+                        
+                        <a href="https://github.com/duartegroup/autodE" target="_blank" class="resource-card p-4 rounded-lg block hover:no-underline">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-medium text-sm text-gray-200">autodE</span>
+                                <span class="text-xs mono text-gray-500">Active</span>
+                            </div>
+                            <p class="text-xs text-gray-400">Automated reaction profile calculation. High-level interface to ORCA/Gaussian [^14^]</p>
+                        </a>
+
+                        <a href="https://github.com/cclib/cclib" target="_blank" class="resource-card p-4 rounded-lg block hover:no-underline">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-medium text-sm text-gray-200">cclib</span>
+                                <span class="text-xs mono text-gray-500">Parser</span>
+                            </div>
+                            <p class="text-xs text-gray-400">Parse output files from 15+ computational chemistry programs</p>
+                        </a>
+
+                        <a href="https://github.com/YAMACS-SML/GUIDE" target="_blank" class="resource-card p-4 rounded-lg block hover:no-underline">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="font-medium text-sm text-gray-200">GUIDE</span>
+                                <span class="text-xs mono text-gray-500">GUI</span>
+                            </div>
+                            <p class="text-xs text-gray-400">GUI for ORCA calculations integrated with YASARA [^13^]</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SPECIALIZATION TAB -->
+            <div id="tab-specialization" class="tab-content p-8">
+                <div class="flex justify-between items-start mb-8">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-2">Research Specializations</h3>
+                        <p class="text-gray-400">Choose your path based on research interests and career goals</p>
+                    </div>
+                    <span class="difficulty-badge diff-advanced">Advanced</span>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Catalysis -->
+                    <div class="glass-panel rounded-xl p-6 border border-orange-500/20 hover:border-orange-500/50 transition-colors cursor-pointer group">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="font-bold text-orange-400 text-lg">Homogeneous Catalysis</h4>
+                            <span class="text-2xl group-hover:scale-110 transition-transform">⚗️</span>
+                        </div>
+                        <ul class="space-y-2 text-sm text-gray-300 mb-4">
+                            <li class="flex items-start"><span class="text-orange-500 mr-2">▸</span>Transition state theory</li>
+                            <li class="flex items-start"><span class="text-orange-500 mr-2">▸</span>Reaction coordinate calculations</li>
+                            <li class="flex items-start"><span class="text-orange-500 mr-2">▸</span>Organometallic thermodynamics</li>
+                        </ul>
+                        <div class="text-xs text-gray-500 mono">Key Methods: DLPNO-CCSD(T), meta-GGA functionals</div>
+                    </div>
+
+                    <!-- Materials -->
+                    <div class="glass-panel rounded-xl p-6 border border-cyan-500/20 hover:border-cyan-500/50 transition-colors cursor-pointer group">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="font-bold text-cyan-400 text-lg">Materials & Solids</h4>
+                            <span class="text-2xl group-hover:scale-110 transition-transform">💎</span>
+                        </div>
+                        <ul class="space-y-2 text-sm text-gray-300 mb-4">
+                            <li class="flex items-start"><span class="text-cyan-500 mr-2">▸</span>Periodic DFT (VASP, Quantum ESPRESSO)</li>
+                            <li class="flex items-start"><span class="text-cyan-500 mr-2">▸</span>Band structure calculations</li>
+                            <li class="flex items-start"><span class="text-cyan-500 mr-2">▸</span>Surface adsorption studies</li>
+                        </ul>
+                        <div class="text-xs text-gray-500 mono">Key Methods: PAW, hybrid functionals, GW approximation</div>
+                    </div>
+
+                    <!-- Bio -->
+                    <div class="glass-panel rounded-xl p-6 border border-green-500/20 hover:border-green-500/50 transition-colors cursor-pointer group">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="font-bold text-green-400 text-lg">Biomolecular Modeling</h4>
+                            <span class="text-2xl group-hover:scale-110 transition-transform">🧬</span>
+                        </div>
+                        <ul class="space-y-2 text-sm text-gray-300 mb-4">
+                            <li class="flex items-start"><span class="text-green-500 mr-2">▸</span>QM/MM simulations</li>
+                            <li class="flex items-start"><span class="text-green-500 mr-2">▸</span>Protein-ligand docking</li>
+                            <li class="flex items-start"><span class="text-green-500 mr-2">▸</span>Free energy perturbation</li>
+                        </ul>
+                        <div class="text-xs text-gray-500 mono">Key Methods: AMBER, GROMACS, CHARMM force fields</div>
+                    </div>
+
+                    <!-- ML -->
+                    <div class="glass-panel rounded-xl p-6 border border-purple-500/20 hover:border-purple-500/50 transition-colors cursor-pointer group">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="font-bold text-purple-400 text-lg">ML for Chemistry</h4>
+                            <span class="text-2xl group-hover:scale-110 transition-transform">🤖</span>
+                        </div>
+                        <ul class="space-y-2 text-sm text-gray-300 mb-4">
+                            <li class="flex items-start"><span class="text-purple-500 mr-2">▸</span>Neural network potentials</li>
+                            <li class="flex items-start"><span class="text-purple-500 mr-2">▸</span>Active learning workflows</li>
+                            <li class="flex items-start"><span class="text-purple-500 mr-2">▸</span>High-throughput screening</li>
+                        </ul>
+                        <div class="text-xs text-gray-500 mono">Key Tools: SchNet, ANI, DeepMD-kit, PyTorch/TensorFlow</div>
+                    </div>
+                </div>
+
+                <div class="mt-8 glass-panel rounded-xl p-6 border border-white/10">
+                    <h4 class="font-semibold text-white mb-4">Community & Staying Current</h4>
+                    <div class="grid md:grid-cols-3 gap-4 text-sm">
+                        <div class="p-4 rounded-lg bg-white/5">
+                            <h5 class="font-medium text-cyan-400 mb-2">r/comp_chem</h5>
+                            <p class="text-xs text-gray-400">Reddit community for troubleshooting and career advice [^1^]</p>
+                        </div>
+                        <div class="p-4 rounded-lg bg-white/5">
+                            <h5 class="font-medium text-purple-400 mb-2">Matter Modeling SE</h5>
+                            <p class="text-xs text-gray-400">Stack Exchange for technical Q&A [^5^]</p>
+                        </div>
+                        <div class="p-4 rounded-lg bg-white/5">
+                            <h5 class="font-medium text-pink-400 mb-2">CompChem.org</h5>
+                            <p class="text-xs text-gray-400">Scripts and tutorials for ORCA/Gaussian workflows [^7^]</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Quick Reference Footer -->
+    <section class="container mx-auto px-6 pb-12">
+        <div class="glass-panel rounded-2xl p-8 border border-white/10">
+            <h3 class="text-xl font-bold mb-6 gradient-text">Emergency Reference: Common ORCA Input Blocks</h3>
+            <div class="grid md:grid-cols-2 gap-6 text-sm mono">
+                <div class="code-block p-4">
+                    <div class="text-xs text-gray-500 mb-2"># Standard Geometry Optimization</div>
+! B3LYP def2-TZVP Opt Freq
+%pal nprocs 8 end
+%maxcore 4000
+* xyz 0 1
+  C    0.000000    0.000000    0.000000
+  O    1.200000    0.000000    0.000000
+*</div>
+                <div class="code-block p-4">
+                    <div class="text-xs text-gray-500 mb-2"># Transition State Search</div>
+! B3LYP def2-TZVP OptTS Freq
+%geom
+  Calc_Hess true
+  Recalc_Hess 5
+end
+* xyz 0 1
+  [your coordinates]
+*</div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Tab Switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('[id^="tab-btn-"]').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected
+            document.getElementById('tab-' + tabName).classList.add('active');
+            document.getElementById('tab-btn-' + tabName).classList.add('active');
+            
+            // Update URL hash for sharing
+            window.location.hash = tabName;
+        }
+
+        // Check/Uncheck items
+        function toggleCheck(element) {
+            element.classList.toggle('checked');
+            const circle = element.querySelector('.check-circle');
+            
+            if (element.classList.contains('checked')) {
+                if (circle) {
+                    circle.innerHTML = '✓';
+                    circle.classList.add('bg-cyan-500', 'border-cyan-500', 'text-black');
+                }
+            } else {
+                if (circle) {
+                    circle.innerHTML = '';
+                    circle.classList.remove('bg-cyan-500', 'border-cyan-500', 'text-black');
+                }
+            }
+            
+            updateProgress();
+        }
+
+        // Calculate and update progress
+        function updateProgress() {
+            const total = document.querySelectorAll('.check-circle').length;
+            const checked = document.querySelectorAll('.checked').length;
+            const percentage = Math.round((checked / total) * 100);
+            
+            document.getElementById('total-progress').textContent = percentage + '%';
+            document.getElementById('main-progress-bar').style.width = percentage + '%';
+            
+            // Save to localStorage
+            localStorage.setItem('compchem_progress', JSON.stringify({
+                checked: Array.from(document.querySelectorAll('.checked')).map(el => {
+                    // Generate a simple ID based on content
+                    return el.textContent.slice(0, 20);
+                })
+            }));
+        }
+
+        // Reset progress
+        function resetProgress() {
+            if (confirm('Reset all progress?')) {
+                document.querySelectorAll('.checked').forEach(el => {
+                    el.classList.remove('checked');
+                    const circle = el.querySelector('.check-circle');
+                    if (circle) {
+                        circle.innerHTML = '';
+                        circle.classList.remove('bg-cyan-500', 'border-cyan-500', 'text-black');
+                    }
+                });
+                updateProgress();
+                localStorage.removeItem('compchem_progress');
+            }
+        }
+
+        // Load progress on startup
+        window.addEventListener('load', () => {
+            const saved = localStorage.getItem('compchem_progress');
+            if (saved) {
+                // Simple restoration - in production would use proper IDs
+                console.log('Progress saved');
+            }
+            
+            // Check URL hash for direct linking
+            const hash = window.location.hash.slice(1);
+            if (hash && ['foundation', 'theory', 'software', 'specialization'].includes(hash)) {
+                switchTab(hash);
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.altKey && e.key === '1') switchTab('foundation');
+            if (e.altKey && e.key === '2') switchTab('theory');
+            if (e.altKey && e.key === '3') switchTab('software');
+            if (e.altKey && e.key === '4') switchTab('specialization');
+        });
+    </script>
+</body>
+</html>
